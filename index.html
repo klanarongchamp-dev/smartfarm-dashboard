@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
         /* ============================================
            CSS VARIABLES & THEME CONFIGURATION
@@ -957,46 +955,11 @@
                 </div>
             </div>
 
-            <!-- Temperature Chart -->
-            <div class="chart-section">
-                <div class="section-title">
-                    <i class="fas fa-chart-line"></i> กราฟอุณหภูมิ
-                </div>
-                <div class="chart-container">
-                    <canvas id="tempChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Humidity Chart -->
-            <div class="chart-section">
-                <div class="section-title">
-                    <i class="fas fa-chart-line"></i> กราฟความชื้น
-                </div>
-                <div class="chart-container">
-                    <canvas id="humChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Rain Chance Chart -->
-            <div class="chart-section">
-                <div class="section-title">
-                    <i class="fas fa-chart-line"></i> กราฟโอกาสฝน
-                </div>
-                <div class="chart-container">
-                    <canvas id="rainChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
+            <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-item active" onclick="scrollToTop()">
                 <span class="nav-icon"><i class="fas fa-home"></i></span>
                 <span>หน้าแรก</span>
-            </div>
-            <div class="nav-item" onclick="scrollToCharts()">
-                <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
-                <span>กราฟ</span>
             </div>
             <div class="nav-item" onclick="toggleDarkMode()">
                 <span class="nav-icon"><i class="fas fa-moon"></i></span>
@@ -1017,18 +980,9 @@
         let rainAlertSent = false;
         let darkMode = localStorage.getItem('darkMode') === 'true';
 
-        // Chart instances
-        let tempChart = null;
-        let humChart = null;
-        let rainChart = null;
-
-        // Chart data
-        const tempLabels = [];
-        const tempData = [];
-        const humLabels = [];
-        const humData = [];
-        const rainLabels = [];
-        const rainData = [];
+        
+// ============================================
+        // NOTIFICATIONS
 
         // ============================================
         // INITIALIZATION
@@ -1038,11 +992,8 @@
             if (darkMode) {
                 document.body.classList.add('dark-mode');
             }
-
-            // Initialize charts
-            initCharts();
-
-            // Check login status
+// ============================================
+        // NOTIFICATIONS// Check login status
             const savedEmail = localStorage.getItem('farmEmail');
             if (savedEmail) {
                 isLoggedIn = true;
@@ -1277,152 +1228,15 @@
                 }
 
                 // Update charts
-                updateTempChart(data.current.temperature_2m);
-                updateHumChart(data.current.relative_humidity_2m);
-                updateRainChart(rainChance);
+                
 
             } catch (error) {
                 console.error('❌ Weather API Error:', error);
             }
         }
 
-        // ============================================
-        // CHARTS INITIALIZATION & UPDATE
-        // ============================================
-        function initCharts() {
-            const chartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            font: { family: "'Kanit', sans-serif", size: 12 },
-                            color: document.body.classList.contains('dark-mode') ? '#f1f5f9' : '#1e293b'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            font: { family: "'Kanit', sans-serif" },
-                            color: document.body.classList.contains('dark-mode') ? '#f1f5f9' : '#1e293b'
-                        },
-                        grid: {
-                            color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            font: { family: "'Kanit', sans-serif" },
-                            color: document.body.classList.contains('dark-mode') ? '#f1f5f9' : '#1e293b'
-                        },
-                        grid: {
-                            color: document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-                        }
-                    }
-                }
-            };
-
-            // Temperature Chart
-            tempChart = new Chart(document.getElementById('tempChart'), {
-                type: 'line',
-                data: {
-                    labels: tempLabels,
-                    datasets: [{
-                        label: 'อุณหภูมิ (°C)',
-                        data: tempData,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#ef4444',
-                        pointBorderColor: 'white',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: chartOptions
-            });
-
-            // Humidity Chart
-            humChart = new Chart(document.getElementById('humChart'), {
-                type: 'line',
-                data: {
-                    labels: humLabels,
-                    datasets: [{
-                        label: 'ความชื้น (%)',
-                        data: humData,
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#3b82f6',
-                        pointBorderColor: 'white',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: chartOptions
-            });
-
-            // Rain Chart
-            rainChart = new Chart(document.getElementById('rainChart'), {
-                type: 'line',
-                data: {
-                    labels: rainLabels,
-                    datasets: [{
-                        label: 'โอกาสฝน (%)',
-                        data: rainData,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#10b981',
-                        pointBorderColor: 'white',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        function updateTempChart(value) {
-            tempLabels.push(new Date().toLocaleTimeString('th-TH'));
-            tempData.push(value);
-            if (tempLabels.length > 20) {
-                tempLabels.shift();
-                tempData.shift();
-            }
-            if (tempChart) tempChart.update();
-        }
-
-        function updateHumChart(value) {
-            humLabels.push(new Date().toLocaleTimeString('th-TH'));
-            humData.push(value);
-            if (humLabels.length > 20) {
-                humLabels.shift();
-                humData.shift();
-            }
-            if (humChart) humChart.update();
-        }
-
-        function updateRainChart(value) {
-            rainLabels.push(new Date().toLocaleTimeString('th-TH'));
-            rainData.push(value);
-            if (rainLabels.length > 20) {
-                rainLabels.shift();
-                rainData.shift();
-            }
-            if (rainChart) rainChart.update();
-        }
-
-        // ============================================
+        
+// ============================================
         // NOTIFICATIONS
         // ============================================
         function showNotification(message, type = 'info') {
@@ -1457,13 +1271,7 @@
             document.querySelectorAll('.nav-item')[0].classList.add('active');
         }
 
-        function scrollToCharts() {
-            const chartSection = document.querySelector('.chart-section');
-            if (chartSection) {
-                chartSection.scrollIntoView({ behavior: 'smooth' });
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                document.querySelectorAll('.nav-item')[1].classList.add('active');
-            }
+        
         }
     </script>
 </body>
