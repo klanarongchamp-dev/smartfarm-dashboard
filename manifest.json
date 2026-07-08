@@ -1,20 +1,26 @@
 {
   "name": "สวนลุงนะ ฟาร์ม",
   "short_name": "สวนลุงนะ",
+  "description": "Smart Farm Dashboard สำหรับควบคุมปั๊มน้ำและตรวจสภาพอากาศ",
   "display": "standalone",
-  "background_color": "#22c55e",
-  "theme_color": "#22c55e",
-  "start_url": "./",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#14532d",
+  "start_url": "./index.html",
+  "scope": "./",
+  "lang": "th",
   "icons": [
     {
       "src": "suanlungna_icon_180.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "suanlungna_icon_512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
